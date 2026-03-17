@@ -1,3 +1,14 @@
+# Extra Folders
+/CMakeFiles
+/cpu_main.dir
+/spmv_bench.dir
+/cg_solver.dir
+/out
+/Release
+/x64
+
+# From CMake
+cmake_install.cmake
 *.vcxproj
 *.vcxproj.filters
 *.json
@@ -7,17 +18,17 @@
 *.sln
 *.bin
 *.vsidx
-/CMakeFiles
-/cpu_main.dir
-/spmv_bench.dir
-/cg_solver.dir
-/out
-/Release
-/x64
 *.db
-CMakeCache.txt
-cmake_install.cmake
 *.sqlite
 *.suo
 *.wsuo
 *.vs
+
+# Profiling
+*.exe
+*.lib
+*.ncu-rep
+*.exp
+
+# Text Files
+CMakeCache.txt

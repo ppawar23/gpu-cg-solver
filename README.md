@@ -83,7 +83,7 @@ nvcc -std=c++17 -O2 -arch=sm_89 -o cg_solver cuda/cg_solver.cu -lcusparse -lcubl
 ./cg_solver --sweep > results/rtx4090/cg_full.csv
 ```
 
-### 3. Avah (Windows, RTX 3080 / MX250)
+### 3. Avah (Windows, RTX 3080)
 
 ```bash
 # Build — RTX 3080
@@ -106,6 +106,14 @@ cmake --build . --config Release
 .\Release\spmv_bench.exe --sweep > results\rtx3080\spmv_bench.csv 
 ```
 
+### For Prolfiling using RTX 3080
+```bash
+# For creating the exe for profiling
+nvcc -ccbin [Path to Microsoft MSVC x64 cl.exe] -arch=sm_86 -o [exe name] [file name].cu -lcublas -lcusparse 
+
+# For running the profiler
+ncu -o [exe name]Report ./[exe name] 
+```
 ---
 
 ## Command Reference
