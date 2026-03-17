@@ -87,24 +87,23 @@ nvcc -std=c++17 -O2 -arch=sm_89 -o cg_solver cuda/cg_solver.cu -lcusparse -lcubl
 
 ```bash
 # Build — RTX 3080
-mkdir build && cd build
-cmake .. -DCMAKE_CUDA_ARCHITECTURES=86
-cmake --build . --config Release
-cd ..
+mkdir build && cd build 
+mkdir results\rtx3080 
+cmake .. -DCMAKE_CUDA_ARCHITECTURES=86 -DCMAKE_BUILD_TYPE=Release 
+cd .. 
+cmake --build . --config Release  
 
-# Or for MX250 (if CUDA works on laptop)
-# cmake .. -DCMAKE_CUDA_ARCHITECTURES=61   # Pascal variant
-# cmake .. -DCMAKE_CUDA_ARCHITECTURES=75   # Turing variant
+# Correctness check first (always do this before sweeps) 
+.\Release\cg_solver.exe --correctness 
 
-# SpMV microbenchmark (kernel tuning)
-./spmv_bench --sweep > results/rtx3080/spmv_bench.csv
+# Single kernel test 
+.\Release\spmv_bench.exe --dim 2 --N 1024 --kernel row_per_thread --block 256 
 
-# Single kernel test
-./spmv_bench --dim 2 --N 1024 --kernel row_per_thread --block 256
+# Full CG sweep 
+.\Release\cg_solver.exe --sweep > results\rtx3080\cg_full.csv 
 
-# Full CG sweep (same settings as Deen for comparison)
-./cg_solver --correctness
-./cg_solver --sweep > results/rtx3080/cg_full.csv
+# SpMV sweep 
+.\Release\spmv_bench.exe --sweep > results\rtx3080\spmv_bench.csv 
 ```
 
 ---
