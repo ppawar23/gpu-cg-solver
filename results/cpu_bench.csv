@@ -1,0 +1,10 @@
+gpu,problem_dim,grid_n,rows,nnz,kernel_variant,block_size,total_time_ms,spmv_time_ms,dot_time_ms,axpy_time_ms,overhead_ms,iterations,rel_residual,abs_error,spmv_gbps,bw_efficiency_pct
+CPU,2D,32,1024,4992,cpu_reference,0,0.018,-1,-1,-1,-1,1,6.297824e-12,5.673240e-14,-1,-1
+CPU,2D,64,4096,20224,cpu_reference,0,0.070,-1,-1,-1,-1,1,7.480837e-11,2.212674e-13,-1,-1
+CPU,2D,128,16384,81408,cpu_reference,0,0.232,-1,-1,-1,-1,1,1.226604e-09,7.355228e-13,-1,-1
+CPU,2D,256,65536,326656,cpu_reference,0,1.880,-1,-1,-1,-1,2,7.619066e-09,1.528999e-12,-1,-1
+CPU,2D,512,262144,1308672,cpu_reference,0,12.807,-1,-1,-1,-1,5,4.867605e-09,9.703141e-13,-1,-1
+CPU,3D,16,4096,27136,cpu_reference,0,0.040,-1,-1,-1,-1,1,3.099009e-13,1.487699e-14,-1,-1
+CPU,3D,32,32768,223232,cpu_reference,0,0.317,-1,-1,-1,-1,1,4.915940e-12,4.996004e-14,-1,-1
+CPU,3D,48,110592,760320,cpu_reference,0,0.954,-1,-1,-1,-1,1,2.288380e-11,1.431077e-13,-1,-1
+CPU,3D,64,262144,1810432,cpu_reference,0,2.070,-1,-1,-1,-1,1,6.791378e-11,2.503553e-13,-1,-1
