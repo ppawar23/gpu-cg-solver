@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Aydee\Desktop\School\Grad\Project\gpu-cg-solver\common\cpu_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Aydee\Desktop\School\Grad\Project\gpu-cg-solver\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{77980B88-EF66-39A4-AF46-5617AC898015}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

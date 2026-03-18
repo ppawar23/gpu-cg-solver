@@ -1,0 +1,67 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Aydee\\Desktop\\School\\Grad\\Project\\gpu-cg-solver\\build\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{3BBBC945-31AE-3773-8619-318A26908679}|spmv_bench.vcxproj|C:\\Users\\Aydee\\Desktop\\School\\Grad\\Project\\gpu-cg-solver\\cuda\\spmv_bench.cu||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B91F1179-5E09-34F4-A36B-A8E388F62A1B}|cg_solver.vcxproj|C:\\Users\\Aydee\\Desktop\\School\\Grad\\Project\\gpu-cg-solver\\cuda\\cg_solver.cu||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2A55DB2F-7C35-3017-B6AB-FC3DF940D48B}|cpu_main.vcxproj|C:\\Users\\Aydee\\Desktop\\School\\Grad\\Project\\gpu-cg-solver\\common\\cpu_main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "spmv_bench.cu",
+              "DocumentMoniker": "C:\\Users\\Aydee\\Desktop\\School\\Grad\\Project\\gpu-cg-solver\\cuda\\spmv_bench.cu",
+              "RelativeDocumentMoniker": "..\\cuda\\spmv_bench.cu",
+              "ToolTip": "C:\\Users\\Aydee\\Desktop\\School\\Grad\\Project\\gpu-cg-solver\\cuda\\spmv_bench.cu",
+              "RelativeToolTip": "..\\cuda\\spmv_bench.cu",
+              "ViewState": "AgIAAAIBAAAAAAAAAAAAABcBAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-03-16T21:23:55.322Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "cpu_main.cpp",
+              "DocumentMoniker": "C:\\Users\\Aydee\\Desktop\\School\\Grad\\Project\\gpu-cg-solver\\common\\cpu_main.cpp",
+              "RelativeDocumentMoniker": "..\\common\\cpu_main.cpp",
+              "ToolTip": "C:\\Users\\Aydee\\Desktop\\School\\Grad\\Project\\gpu-cg-solver\\common\\cpu_main.cpp",
+              "RelativeToolTip": "..\\common\\cpu_main.cpp",
+              "ViewState": "AgIAAIEAAAAAAAAAAAAYwH8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-03-16T06:36:47.316Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "cg_solver.cu",
+              "DocumentMoniker": "C:\\Users\\Aydee\\Desktop\\School\\Grad\\Project\\gpu-cg-solver\\cuda\\cg_solver.cu",
+              "RelativeDocumentMoniker": "..\\cuda\\cg_solver.cu",
+              "ToolTip": "C:\\Users\\Aydee\\Desktop\\School\\Grad\\Project\\gpu-cg-solver\\cuda\\cg_solver.cu",
+              "RelativeToolTip": "..\\cuda\\cg_solver.cu",
+              "ViewState": "AgIAACwBAAAAAAAAAAAAAEYBAABaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-03-16T06:35:41.302Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

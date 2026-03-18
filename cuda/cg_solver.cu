@@ -18,8 +18,7 @@
  * attributed solely to SpMV (proposal Section 5 integration rule).
  *
  * Build:
- *   nvcc -std=c++17 -O2 -arch=sm_89 -o cg_solver cuda/cg_solver.cu \
- *        -lcusparse -lcublas -I common/
+ *   nvcc -std=c++17 -O2 -arch=sm_89 -o cg_solver cuda/cg_solver.cu \-lcusparse -lcublas -I common/
  *   (sm_89 for 4090, sm_86 for 3080, sm_61/sm_75 for MX250)
  *
  * Usage:
@@ -43,6 +42,9 @@
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
+#include <sstream>
+#include <fstream>
+#include "device_launch_parameters.h"
 
 #include "../common/csr.h"
 #include "../common/poisson.h"
@@ -75,6 +77,7 @@
 /* ── Fused p = r + beta*p kernel (cuBLAS lacks this single op) ────────── */
 __global__ void update_p_kernel(double* p, const double* r,
                                 double beta, int32_t n) {
+
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < n) {
         p[i] = r[i] + beta * p[i];
@@ -84,7 +87,7 @@ __global__ void update_p_kernel(double* p, const double* r,
 inline void launch_update_p(double* d_p, const double* d_r,
                             double beta, int32_t n) {
     int block = 256;
-    int grid  = (n + block - 1) / block;
+    unsigned int grid  = (n + block - 1) / block;
     update_p_kernel<<<grid, block>>>(d_p, d_r, beta, n);
 }
 
@@ -99,7 +102,9 @@ GPUInfo get_gpu_info() {
     CUDA_CHECK(cudaGetDeviceProperties(&prop, 0));
     GPUInfo info;
     info.name = prop.name;
-    info.peak_bw_gbps = (double)prop.memoryClockRate * 1e3
+    int clockRateKHz;
+    cudaDeviceGetAttribute(&clockRateKHz, cudaDevAttrClockRate, 0);
+    info.peak_bw_gbps = (double)clockRateKHz * 1e3
                        * (double)prop.memoryBusWidth / 8.0
                        * 2.0 / 1e9;
     std::cerr << "GPU: " << info.name << " | Peak BW: "
@@ -306,6 +311,10 @@ void gpu_cg_solve(const CSRMatrix& A,
     double bw_eff = (spmv_gbps / gpu_info.peak_bw_gbps) * 100.0;
 
     /* ── CSV output ── */
+    printToCSV("cg_results.csv", formatForCSV(gpu_info, dim_label, grid_n, A,
+        kernel_name, block_size, total_ms,total_spmv_ms,
+        total_dot_ms,total_axpy_ms,overhead_ms, iters,
+        rel_res, abs_err, spmv_gbps, bw_eff));
     std::cout << gpu_info.name << ","
               << dim_label << "," << grid_n << ","
               << A.nrows << "," << A.nnz << ","
@@ -487,6 +496,46 @@ int run_gpu_correctness(const GPUInfo& gpu_info) {
 /* ═══════════════════════════════════════════════════════════════════════ */
 /*  CSV header (project-standard schema)                                   */
 /* ═══════════════════════════════════════════════════════════════════════ */
+//CSV file exists
+static bool fileExistsAndNonEmpty(const std::string& path) {
+    std::ifstream f(path);
+    //if the path exists and the end of the file has not been reached
+    return f.good() && f.peek() != std::ifstream::traits_type::eof();
+}
+//format line for csv output
+static std::string formatForCSV(GPUInfo gpu_info, std::string dim_label, int grid_n, CSRMatrix A,
+                                std::string kernel_name, int block_size, double total_ms, double total_spmv_ms, 
+                                double total_dot_ms, double total_axpy_ms,double overhead_ms, int iters, 
+                                double rel_res,double abs_err, double spmv_gbps, double bw_eff) {
+    std::ostringstream ss;
+    ss << gpu_info.name << ","
+        << dim_label << "," << grid_n << ","
+        << A.nrows << "," << A.nnz << ","
+        << kernel_name << "," << block_size << ","
+        << std::fixed << std::setprecision(3)
+        << total_ms << "," << total_spmv_ms << ","
+        << total_dot_ms << "," << total_axpy_ms << "," << overhead_ms << ","
+        << iters << ","
+        << std::scientific << std::setprecision(6) << rel_res << "," << abs_err << ","
+        << std::fixed << std::setprecision(2) << spmv_gbps << "," << bw_eff << "\n";
+    return ss.str();
+}
+
+//csv output
+static void printToCSV(const std::string& path, const std::string& row) {
+    if (path.empty()) return;
+    const bool hasContent = fileExistsAndNonEmpty(path);
+    std::ofstream f(path, std::ios::app);
+    if (!hasContent) {
+        f << "gpu,problem_dim,grid_n,rows,nnz,"
+            << "kernel_variant,block_size,"
+            << "total_time_ms,spmv_time_ms,dot_time_ms,axpy_time_ms,overhead_ms,"
+            << "iterations,rel_residual,abs_error,"
+            << "spmv_gbps,bw_efficiency_pct\n";
+    }
+    f << row << "\n";
+}
+
 void print_csv_header() {
     std::cout << "gpu,problem_dim,grid_n,rows,nnz,"
               << "kernel_variant,block_size,"
@@ -544,8 +593,8 @@ int main(int argc, char* argv[]) {
          * Full experiment sweep: all problem sizes × all kernels × block sizes.
          * This is what Deen runs on the 4090 and Avah replicates on the 3080.
          */
-        std::vector<int> sizes_2d = {128, 256, 512, 1024, 2048};
-        std::vector<int> sizes_3d = {32, 48, 64, 96, 128};
+        std::vector<int> sizes_2d = {128, 256, 512, 1024, 2048, 4096, 8192};
+        std::vector<int> sizes_3d = {32, 48, 64, 96, 128, 160, 192};
         std::vector<std::string> ks = {"cusparse", "row_per_thread", "warp_per_row"};
         std::vector<int> bss = {64, 128, 256, 512};
 

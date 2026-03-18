@@ -46,6 +46,8 @@
 
 /* Our custom SpMV kernels */
 #include "spmv_kernels.cuh"
+#include <sstream>
+#include <fstream>
 
 /* ──────────────────────────────────────────────────────────────────────── */
 /*  Error checking macro — wraps every CUDA call                           */
@@ -93,7 +95,9 @@ GPUInfo get_gpu_info() {
      *   /8 to convert bits to bytes
      *   /1e6 to get GB/s
      */
-    info.peak_bw_gbps = (double)prop.memoryClockRate * 1e3
+    int clockRateKHz;
+    cudaDeviceGetAttribute(&clockRateKHz, cudaDevAttrClockRate, 0);
+    info.peak_bw_gbps = (double)clockRateKHz * 1e3
                        * (double)prop.memoryBusWidth / 8.0
                        * 2.0 / 1e9;
 
@@ -116,6 +120,7 @@ struct DeviceCSR {
     int32_t  nrows;
     int64_t  nnz;
 };
+
 
 DeviceCSR upload_matrix(const CSRMatrix& A) {
     DeviceCSR d;
@@ -288,6 +293,7 @@ void bench_kernel(const std::string& kernel_name,
     CUDA_CHECK(cudaEventDestroy(stop));
 }
 
+
 /* ──────────────────────────────────────────────────────────────────────── */
 /*  CSV header for microbenchmark output                                   */
 /* ──────────────────────────────────────────────────────────────────────── */
@@ -346,8 +352,8 @@ int main(int argc, char* argv[]) {
          * Full sweep: all problem sizes × all kernels × all block sizes.
          * This is what Avah runs to produce the complete benchmark dataset.
          */
-        std::vector<int> sizes_2d = {64, 128, 256, 512, 1024, 2048};
-        std::vector<int> sizes_3d = {32, 48, 64, 96, 128};
+        std::vector<int> sizes_2d = {64, 128, 256, 512, 1024, 2048, 4096, 8192};
+        std::vector<int> sizes_3d = {32, 48, 64, 96, 128, 160, 192};
 
         /* 2D sweep */
         for (int n : sizes_2d) {

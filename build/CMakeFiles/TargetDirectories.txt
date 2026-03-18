@@ -1,0 +1,5 @@
+C:/Users/Aydee/Desktop/School/Grad/Project/gpu-cg-solver/build/CMakeFiles/cg_solver.dir
+C:/Users/Aydee/Desktop/School/Grad/Project/gpu-cg-solver/build/CMakeFiles/spmv_bench.dir
+C:/Users/Aydee/Desktop/School/Grad/Project/gpu-cg-solver/build/CMakeFiles/cpu_main.dir
+C:/Users/Aydee/Desktop/School/Grad/Project/gpu-cg-solver/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Aydee/Desktop/School/Grad/Project/gpu-cg-solver/build/CMakeFiles/ZERO_CHECK.dir

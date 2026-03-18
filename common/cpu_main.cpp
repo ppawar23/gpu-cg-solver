@@ -30,6 +30,8 @@
 #include "test_cases.h"
 
 #include <iostream>
+#include <sstream>
+#include <fstream>
 #include <iomanip>
 #include <string>
 #include <vector>
@@ -42,6 +44,43 @@
  * All team members write this same format so Payal's plotting scripts
  * work without manual cleanup.
  */
+
+ //CSV file exists
+static bool fileExistsAndNonEmpty(const std::string& path) {
+    std::ifstream f(path);
+    //if the path exists and the end of the file has not been reached
+    return f.good() && f.peek() != std::ifstream::traits_type::eof();
+}
+//format line for csv output
+static std::string formatForCSV( std::string dimension, int N, CSRMatrix A,
+    CGResult res, double abs_err) {
+    std::ostringstream ss;
+    ss << dimension << N << "," << A.nrows << "," << A.nnz << ","
+        << "cpu_reference,0,"
+        << std::fixed << std::setprecision(3) << res.total_time_ms << ","
+        << "-1,-1,-1,-1,"
+        << res.iterations << ","
+        << std::scientific << std::setprecision(6)
+        << res.final_rel_residual << ","
+        << abs_err << ","
+        << "-1,-1\n";
+    return ss.str();
+}
+
+//csv output
+static void printToCSV(const std::string& path, const std::string& row) {
+    if (path.empty()) return;
+    const bool hasContent = fileExistsAndNonEmpty(path);
+    std::ofstream f(path, std::ios::app);
+    if (!hasContent) {
+        f << "gpu,problem_dim,grid_n,rows,nnz,"
+            << "kernel_variant,block_size,"
+            << "total_time_ms,spmv_time_ms,dot_time_ms,axpy_time_ms,overhead_ms,"
+            << "iterations,rel_residual,abs_error,"
+            << "spmv_gbps,bw_efficiency_pct\n";
+    }
+    f << row << "\n";
+}
 void print_csv_header() {
     std::cout << "gpu,problem_dim,grid_n,rows,nnz,"
               << "kernel_variant,block_size,"
@@ -76,6 +115,7 @@ void run_benchmark_2d(int N, bool verbose) {
      * spmv/dot/axpy fields are -1 to indicate "not measured separately".
      * spmv_gbps and bw_efficiency are not meaningful for CPU (no peak BW).
      */
+    printToCSV("cpu_baseline", formatForCSV("CPU,2D,", N, A, res, abs_err));
     std::cout << "CPU,2D," << N << "," << A.nrows << "," << A.nnz << ","
               << "cpu_reference,0,"
               << std::fixed << std::setprecision(3) << res.total_time_ms << ","
@@ -100,7 +140,7 @@ void run_benchmark_3d(int N, bool verbose) {
 
     CGResult res = cpu_cg_solve(A, rhs, 1e-8, 50000, verbose);
     double abs_err = compute_abs_error(res.x, u_exact);
-
+    printToCSV("cpu_baseline", formatForCSV("CPU,3D,", N, A, res, abs_err));
     std::cout << "CPU,3D," << N << "," << A.nrows << "," << A.nnz << ","
               << "cpu_reference,0,"
               << std::fixed << std::setprecision(3) << res.total_time_ms << ","
@@ -136,6 +176,7 @@ int main(int argc, char* argv[]) {
 
     /* ── Step 2: CPU benchmarks ── */
     std::cerr << "Running CPU benchmarks (output is CSV to stdout)...\n";
+
     print_csv_header();
 
     /* 2D Poisson — proposal sizes (skip huge ones on slow machines) */

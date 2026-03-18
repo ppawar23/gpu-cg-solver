@@ -1,0 +1,10 @@
+^C:\USERS\AYDEE\DESKTOP\SCHOOL\GRAD\PROJECT\GPU-CG-SOLVER\BUILD\CMAKEFILES\855B0C93B04D17C9B6B0C02865DA2B3A\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Aydee/Desktop/School/Grad/Project/gpu-cg-solver -BC:/Users/Aydee/Desktop/School/Grad/Project/gpu-cg-solver/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/Aydee/Desktop/School/Grad/Project/gpu-cg-solver/build/gpu_cg_solver.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
