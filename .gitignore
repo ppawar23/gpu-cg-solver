@@ -30,5 +30,6 @@ cmake_install.cmake
 *.ncu-rep
 *.exp
 
-# Text Files
+# Text Files and Images
+*.png
 CMakeCache.txt

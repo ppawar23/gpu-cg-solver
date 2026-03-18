@@ -4,6 +4,7 @@ plot.py — Generate All Project Charts from CSV Data
 =============================================================================
 
 Owner: Payal (code owner + verification + reporting)
+Recent edit on this file: Avah (refactoring of file import/export)
 
 Reads the standardized CSV files produced by cg_solver and spmv_bench
 on each GPU, then generates the 8 deliverable charts from the project plan:
@@ -59,46 +60,39 @@ COLORS = {
 }
 FIG_DPI = 150
 
+def load_csv(filepath):
+    """Try multiple encodings and return a DataFrame or None."""
+    for encoding in ["utf-8-sig", "utf-16", "latin-1", "cp1252"]:
+        try:
+            df = pd.read_csv(filepath, skipinitialspace=True, encoding=encoding)
+            print(f"  Loaded {filepath} ({encoding}): {len(df)} rows")
+            return df
+        except (UnicodeDecodeError, pd.errors.ParserError):
+            continue
+    print(f"  ERROR: Could not load {filepath} with any known encoding")
+    return None
+
 
 def load_cg_csvs(results_dir):
-    """Load and concatenate all CG solver CSVs from results subdirectories."""
-    files = glob.glob(os.path.join(results_dir, "*/cg_*.csv"))
+    files = glob.glob(os.path.join(results_dir, "cg_*.csv")) + \
+            glob.glob(os.path.join(results_dir, "*/cg_*.csv"))
     if not files:
-        print(f"WARNING: No CG CSV files found in {results_dir}/*/cg_*.csv")
+        print(f"WARNING: No CG CSV files found in {results_dir}")
         return pd.DataFrame()
-    
-    dfs = []
-    for f in files:
-        try:
-            df = pd.read_csv(f, skipinitialspace=True)
-            dfs.append(df)
-            print(f"  Loaded {f}: {len(df)} rows")
-        except Exception as e:
-            print(f"  ERROR loading {f}: {e}")
-    
-    if not dfs:
-        return pd.DataFrame()
-    return pd.concat(dfs, ignore_index=True)
+
+    dfs = [df for f in files if (df := load_csv(f)) is not None]
+    return pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
 
 def load_bench_csvs(results_dir):
-    """Load and concatenate all SpMV bench CSVs."""
-    files = glob.glob(os.path.join(results_dir, "*/spmv_*.csv"))
+    files = glob.glob(os.path.join(results_dir, "spmv_*.csv")) + \
+            glob.glob(os.path.join(results_dir, "*/spmv_*.csv"))
     if not files:
-        print(f"WARNING: No SpMV bench CSVs found in {results_dir}/*/spmv_*.csv")
+        print(f"WARNING: No SpMV bench CSVs found in {results_dir}")
         return pd.DataFrame()
-    
-    dfs = []
-    for f in files:
-        try:
-            df = pd.read_csv(f, skipinitialspace=True)
-            dfs.append(df)
-        except Exception as e:
-            print(f"  ERROR loading {f}: {e}")
-    
-    if not dfs:
-        return pd.DataFrame()
-    return pd.concat(dfs, ignore_index=True)
+
+    dfs = [df for f in files if (df := load_csv(f)) is not None]
+    return pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -358,8 +352,8 @@ def plot_speedup(df, out_dir, dim="2D"):
 # ═══════════════════════════════════════════════════════════════════════
 def main():
     parser = argparse.ArgumentParser(description="Generate project charts from CSV data")
-    parser.add_argument("--dir", default="results", help="Results directory")
-    parser.add_argument("--out", default="report/figures", help="Output directory for charts")
+    parser.add_argument("--dir", default="[results/rtx3080]")
+    parser.add_argument("--out", default="[path to scripts/report/figures]")
     args = parser.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
